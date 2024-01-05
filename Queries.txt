@@ -1,0 +1,20 @@
+drop database Library;
+create database Library;
+use Library;
+create table Book(
+	Book_id int,
+    Title varchar(70) not null,
+    Edition int,
+    Available bool default true,
+    primary key(Book_id)
+);
+create table Author(
+	Author_id int,
+    Author_name varchar(200),
+    primary key(Author_id)
+);
+create table Publisher(
+	Publisher_id int,
+    Publisher_name varchar(200),
+    primary key(Publisher_id)
+);
