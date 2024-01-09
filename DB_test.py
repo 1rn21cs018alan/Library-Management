@@ -1,8 +1,8 @@
 import mysql.connector
 import re
 HOST='localhost'
-USER="root"
-PASS="Pr0gr@mm!ng#123"
+USER="Access1"
+PASS="DB_IO"
 DBNAME="library"
 
 def print_member_details(data):
