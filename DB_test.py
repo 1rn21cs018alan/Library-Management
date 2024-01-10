@@ -38,8 +38,8 @@ def print_member_details(data):
             print(f"\t{k}.{each}")
     print("-"*40)
 
-email_re="^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
-
+email_re="^[a-zA-Z][a-zA-Z0-9+_.-]*@[a-zA-Z][a-zA-Z0-9-]*\.[a-zA-Z]*$"
+username_re="^[a-zA-Z][a-zA-Z0-9_]*$"
 def definite_input():
     while True:
         text=input().strip()
@@ -48,8 +48,12 @@ def definite_input():
         else:
             return text
 def input_member():
+    print("Enter Username:",end="")
+    data={"user_name":definite_input()}
+    print("Enter Password:",end="")
+    data["password"]=definite_input()
     print("Enter First Name:",end="")
-    data={"Fname":definite_input()}
+    data["Fname"]=definite_input()
     print("Enter Middle Name:",end="")
     data["Mname"]=definite_input()
     print("Enter Last Name:",end="")
@@ -83,12 +87,35 @@ def input_member():
 # temp=input_member()
 # print(temp)
 # print_member_details(temp)
-if __name__=="__main__":
+def main():
     with mysql.connector.connect(host=HOST,user=USER,password=PASS,database=DBNAME) as DB:
         with DB.cursor() as cursor:
             cursor.execute(f"use {DBNAME}")
             cursor.execute("SHOW DATABASES")
-
+            def check_user(username,password):
+                if not re.match(username_re,username):
+                    return False
+                if not re.match(".*\d.*",password):
+                    return False
+                if not re.match(".*[a-z].*",password):
+                    return False
+                if not re.match(".*[A-Z].*",password):
+                    return False
+                if len(password)<8:
+                    return False
+                return True
+            
+            def user_exists(username):
+                cursor.execute(f"select exists (select user_name from users where user_name=\"{username}\")")
+                data=list(cursor)
+                # print(data)
+                if len(data)!=0:
+                    data=data[0][0]
+                    if data==0:
+                        return False
+                    elif data==1:
+                        return True
+                
 
             def read_member_info(id=None,name=None):
                 def read_other_attr(id,person):
@@ -131,22 +158,41 @@ if __name__=="__main__":
             # cursor.execute(query)
             data=list(cursor)
             # print(data)
+            # print(user_exists("james"))
+            # print(user_exists("jamesj"))
+            
             # print(read_member_info(id=1001))
-            print_member_details(read_member_info(id=1001))
-            for each in read_member_info(name="James"):
-                print_member_details(each)
+            # print_member_details(read_member_info(id=1001))
+            # for each in read_member_info(name="James"):
+            #     print_member_details(each)
             
             def insert_member(data=None):
                 if data is None:
                     data=input_member()
+                if not check_user(data["user_name"],data["password"]) or user_exists(data["user_name"]):
+                    print("Invalid Username or Password")
+                    return
                 cursor.execute("insert into library_member(fname,mname,lname) values(%s,%s,%s)",(data["Fname"],data["Mname"],data["Lname"]))
-                val=[]
-                # cursor.execute()
                 id=cursor.lastrowid
+                cursor.execute("insert into user_cred(id,user_name,password) values(%s,%s,%s)",(id,data["user_name"],data["password"]))
+                # cursor.execute()
+                val=[]
                 for each in data["address"]:
                     val.append((id,each))
                 print(val)
+                val=[]
                 cursor.executemany("insert into member_address values(%s,%s)",val)
+                for each in data["email"]:
+                    val.append((id,each))
+                print(val)
+                val=[]
+                cursor.executemany("insert into member_email values(%s,%s)",val)
+                for each in data["phone"]:
+                    val.append((id,each))
+                print(val)
+                cursor.executemany("insert into member_phone_number values(%s,%s)",val)
             insert_member()
-            DB.commit()
-                
+            # DB.commit()
+      
+if __name__=="__main__":
+    main()
