@@ -2,19 +2,19 @@ drop database Library;
 create database Library;
 use Library;
 create table Book(
-	Book_id int,
+	Book_id int auto_increment,
     Title varchar(70) not null,
     Edition int,
     Available bool default true,
     constraint pk1 primary key(Book_id)
 );
 create table Author(
-	Author_id int,
+	Author_id int auto_increment,
     Author_name varchar(200),
     constraint pk2 primary key(Author_id)
 );
 create table Publisher(
-	Publisher_id int,
+	Publisher_id int auto_increment,
     Publisher_name varchar(200),
     constraint pk3 primary key(Publisher_id)
 );
@@ -26,7 +26,7 @@ create table Library_member(
     constraint pk4 primary key(Member_id)
 );
 create table Borrowed_by(
-	Transaction_id int,
+	Transaction_id int auto_increment,
     Due_date date,
     Borrowing_date date,
     Book_id int,
@@ -83,7 +83,12 @@ create table user_cred(
     constraint pk12 primary key(id),
     constraint fk11 foreign key(id) references Library_member(Member_id) on delete cascade
 );
-
+create table test(
+    id int auto_increment,
+    name varchar(30),
+    password varchar(1000),
+    primary key(id)
+);
 create view users as select user_name from user_cred;
 
 insert into library.library_member values(1001,'James','','Ackerson');
