@@ -3,7 +3,7 @@ create database Library;
 use Library;
 create table Book(
 	Book_id int auto_increment,
-    Title varchar(70) not null,
+    Title varchar(200) not null,
     Edition int,
     Available bool default true,
     constraint pk1 primary key(Book_id)
@@ -16,6 +16,8 @@ create table Author(
 create table Publisher(
 	Publisher_id int auto_increment,
     Publisher_name varchar(200),
+    Publisher_phone varchar(20),
+    Publisher_address varchar(200),
     constraint pk3 primary key(Publisher_id)
 );
 create table Library_member(
@@ -23,6 +25,8 @@ create table Library_member(
     Fname varchar(30) not null,
     Mname varchar(30),
     Lname varchar(30),
+    Membership_level int default 1,
+    Books_taken int default 0,
     constraint pk4 primary key(Member_id)
 );
 create table Borrowed_by(
@@ -31,6 +35,7 @@ create table Borrowed_by(
     Borrowing_date date,
     Book_id int,
     Member_id int,
+    returned bool default False,
 	constraint pk5 primary key(Transaction_id),
     constraint fk1 foreign key(Book_id) references Book(Book_id),
     constraint fk2 foreign key(Member_id) references Library_member(Member_id)
@@ -79,6 +84,7 @@ create table Member_phone_number(
 create table user_cred(
 	id int,
     user_name varchar(30) unique not null,
+    last_login date default "2000-01-01",
     password varchar(30) not null,
     constraint pk12 primary key(id),
     constraint fk11 foreign key(id) references Library_member(Member_id) on delete cascade
@@ -89,9 +95,24 @@ create table test(
     password varchar(1000),
     primary key(id)
 );
-create view users as select user_name from user_cred;
 
-insert into library.library_member values(1001,'James','','Ackerson');
+create view users as select user_name,last_login from user_cred;
+
+delimiter //
+create trigger returned
+after update on library.borrowed_by
+for each row
+begin
+	if(new.returned<=>True) then 
+		update library.book B set B.Available = true where B.Book_id=new.Book_id;
+        update library.library_member M set M.Books_taken=M.Books_taken-1 where M.Member_id=new.Member_id;
+    end if;
+end;//
+delimiter ;
+
+
+
+insert into library.library_member(Member_id,Fname,Mname,Lname) values(1001,'James','','Ackerson');
 insert into library.member_address values(1001,'Bightin House, 4th Avenue');
 insert into library.member_email values(1001,'james@gmail.com');
 insert into library.member_phone_number values(1001,'+448836937399');
@@ -105,10 +126,51 @@ insert into library.member_email values(1001,'destroyer@gmail.com');
 insert into library.member_phone_number values(1001,'+443839397698');
 
 insert into library.library_member(fname,mname,lname) values('James','Stone','Hyoren');
-insert into library.user_cred values (last_insert_id(),"jamesj","Lib_pass1");
+insert into library.user_cred(id,user_name,password) values (last_insert_id(),"jamesj","Lib_pass1");
 
 insert into library.library_member(fname,mname,lname) values('Alan','George','Jimcy');
-insert into library.user_cred values (last_insert_id(),"Alan","Welcome1");
+insert into library.user_cred(id,user_name,password) values (last_insert_id(),"Alan","Welcome1");
 
 insert into library.library_member(fname,mname,lname) values('Kevin','','Mathew');
-insert into library.user_cred values (last_insert_id(),"Kal","kalo2006M");
+insert into library.user_cred(id,user_name,password) values (last_insert_id(),"Kal","kalo2006M");
+
+insert into library.Publisher values
+(1,"Fingerprint! Publishing","+9111-23265358","Prakash Books India Pvt Ltd, 113A, Ansari Road, Daryaganj, New Delhi-110002"),
+(2,"Cambridge University Press","+44(0)1223 553311","Cambrudge University Press & Asssessment, Shaftesbury Road, Cambridge, CB28EA"),
+(3,"Charles Scribner's Sons",Null,"153-157 Fifth Avenue, New York City, U.S."),
+(4,"New Age International Publishers",Null,"New Age International Pvt Ltd, Malliarjuna Tmeple Street,NR Colony, Basavangudi, Bengaluru, Karnataka, India"),
+(5,"HarperTorch","+55 21 3175-1030","R. da Quitanda, 86 - Centro, Rio de Janeiro - RJ, 20091-005"),
+(6,"Prentice - Hall","+60 3-567333159","11A, Jalan PJS 7/19Taman Bandar Sunway, 46150 Petaling Jaya, Selangor, Malaysia");
+
+Insert into library.author(Author_id,Author_name) values 
+(1,"Earnest Hemingway"),
+(2,"Leo Tolstoy"),
+(3,"Paulo Cohelo"),
+(4,"M. Govindarajan"),
+(5,"S. Natarajan"),
+(6,"B. Ram"),
+(7,"Sanjay Kumar"),
+(8,"Steven L Brunton"),
+(9,"J. Nathan Kutz");
+insert into library.Book(Book_id,Title,Edition,Publisher_id) values
+(1,"War and Peace",4,1),
+(2,"War and Peace",1,1),
+(3,"Anna Karenina",3,1),
+(4,"For Whom The Bell Tolls",4,3),
+(5,"The Alchemist",19,5),
+(6,"Engineering Ethics",6,6),
+(7,"Computer Fundamentals:Architecture and Organisation",6,4),
+(8,"Data-Driven Science and Engineering: Machine Learning, Dynamic Systems and Control",2,2)
+;
+insert into library.written_by(Book_id,Author_id) values
+(1,2),
+(2,2),
+(3,2),
+(4,1),
+(5,3),
+(6,4),
+(6,5),
+(7,6),
+(7,7),
+(8,9)
+;

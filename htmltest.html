@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript">
+        var apiUrl = '127.0.0.1:5000/test';
+        fetch(apiUrl).then(response => {
+          return response.json();
+        }).then(data => {
+          // Work with JSON data here
+          console.log(data);
+        }).catch(err => {
+          // Do something for an error here
+        });
+    </script>
+</head>
+<body>
+    <form id="form1">
+        <label>Data 1</label>
+        <input type="text" id="d1" name="d1">
+        <label>Data 2</label>
+        <input type="text" id="d2" name="d2">
+        <label>Data 3</label>
+        <input type="text" id="d3" name="d3">
+        <input type="submit" value"submit">
+    </form>
+    
+</body>
+</html>
