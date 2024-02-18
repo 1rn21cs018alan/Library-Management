@@ -166,6 +166,10 @@ insert into library.user_cred(id,user_name,password) values (last_insert_id(),"K
 # this is an example of how to call the signnup procedure, if it returns nothing, signup is successful
 #		if signup is not successful, it returns a record of value "User Already Exists"
 call library.signup("user_name","password","fname","mname","lname","email","phone number","address");
+# use library.login("user_name","password"); to get the id of that user under column name uid
+#		if user doesn't exists or password is wrong, the returned table has a column called data
+#				 that tells the problem with input values
+
 
 insert into library.Publisher values
 (1,"Fingerprint! Publishing","+9111-23265358","Prakash Books India Pvt Ltd, 113A, Ansari Road, Daryaganj, New Delhi-110002"),
