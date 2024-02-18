@@ -193,6 +193,8 @@ def main():
                 cursor.executemany("insert into member_phone_number values(%s,%s)",val)
             insert_member()
             # DB.commit()
-      
+        
 if __name__=="__main__":
     main()
+
+    

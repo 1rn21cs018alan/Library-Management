@@ -96,7 +96,7 @@ create table test(
     primary key(id)
 );
 
-create view users as select user_name,last_login from user_cred;
+#create view users as select user_name,last_login from user_cred;
 
 delimiter //
 create trigger returned
@@ -108,6 +108,35 @@ begin
         update library.library_member M set M.Books_taken=M.Books_taken-1 where M.Member_id=new.Member_id;
     end if;
 end;//
+
+
+create procedure library.signup(in user_name varchar(30),in password varchar(30),in fname varchar(30),in mname varchar(30),in lname varchar(30),in email varchar(70),in phone varchar(15),in address varchar(200)) 
+begin
+	if not exists( select * from library.user_cred L where L.user_name=user_name)then
+		insert into library.library_member(fname,mname,lname) values(fname,mname,lname);
+		set @id=last_insert_id();
+		insert into library.user_cred(id,user_name,password,last_login) values(@id,user_name,password,curdate());
+		insert into library.member_address(Member_id,address) values(@id,address);
+		insert into library.member_email(Member_id,email) values(@id,email);
+		insert into library.member_phone_number(Member_id,phone) values(@id,phone);
+    else
+		select "User Already Exists" data;
+    end if;
+end//
+
+
+create procedure library.login(in user_name varchar(30),in password varchar(30)) 
+begin
+	if exists( select * from library.user_cred L where L.user_name=user_name)then
+		if exists(select * from library.user_cred L where L.user_name=user_name and L.password=password) then
+			select L.id as uid from library.user_cred L where L.user_name=user_name and L.password=password;
+		else
+			select "Wrong Password" data;
+		end if;
+    else
+		select "User Doesn't Exists" data;
+    end if;
+end//
 delimiter ;
 
 
@@ -133,6 +162,10 @@ insert into library.user_cred(id,user_name,password) values (last_insert_id(),"A
 
 insert into library.library_member(fname,mname,lname) values('Kevin','','Mathew');
 insert into library.user_cred(id,user_name,password) values (last_insert_id(),"Kal","kalo2006M");
+
+# this is an example of how to call the signnup procedure, if it returns nothing, signup is successful
+#		if signup is not successful, it returns a record of value "User Already Exists"
+call library.signup("user_name","password","fname","mname","lname","email","phone number","address");
 
 insert into library.Publisher values
 (1,"Fingerprint! Publishing","+9111-23265358","Prakash Books India Pvt Ltd, 113A, Ansari Road, Daryaganj, New Delhi-110002"),
