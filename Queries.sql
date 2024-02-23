@@ -271,4 +271,26 @@ insert into library.genre values
 (56,"Sports and Recreation"),
 (57,"Technology and Computers"),
 (58,"True Adventure"),
-(59,"True Crime");
+(59,"True Crime"),
+(60,"Novel"),
+(61,"Short Story"),
+(62,"War"),
+(63,"Realism"),
+(64,"Fiction");
+
+insert into book_genre values
+(1,60),
+(1,10),
+(1,3),
+(1,62),
+(1,46),
+(1,20),
+(2,60),
+(2,10),
+(2,3),
+(2,62),
+(2,46),
+(2,20),
+(3,60),
+(3,63),
+(3,64);
