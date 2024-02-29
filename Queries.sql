@@ -128,7 +128,7 @@ end//
 create procedure library.login(in user_name varchar(30),in password varchar(30)) 
 begin
 	if exists( select * from library.user_cred L where L.user_name=user_name)then
-		if exists(select * from library.user_cred L where L.user_name=user_name and L.password=password) then
+		if exists(select * from library.user_cred L where L.user_name=user_name and Binary L.password=password) then
 			select L.id as uid from library.user_cred L where L.user_name=user_name and L.password=password;
 		else
 			select "Wrong Password" data;
@@ -276,7 +276,9 @@ insert into library.genre values
 (61,"Short Story"),
 (62,"War"),
 (63,"Realism"),
-(64,"Fiction");
+(64,"Fiction"),
+(65,"Quest"),
+(66,"Drama");
 
 insert into book_genre values
 (1,60),
@@ -293,4 +295,19 @@ insert into book_genre values
 (2,20),
 (3,60),
 (3,63),
-(3,64);
+(3,64),
+(4,60),
+(4,62),
+(4,64),
+(5,60),
+(5,65),
+(5,66),
+(5,1),
+(5,64),
+(5,2),
+(6,57),
+(7,57),
+(7,52),
+(8,57),
+(8,52)
+;
